@@ -1,0 +1,60 @@
+input: '11011111'
+blank: B
+start state: pas1_1
+table:
+  # pasul 1
+  pas1_1:
+    1: {write: a, R: pas1_2}
+    0: {R: pas2_1}
+  pas1_2:
+    1: R
+    0: {R: pas1_3}
+  pas1_3:
+    b: R
+    1: {write: b, L: pas1_4}
+    B: {write: 2, R : pas3_1}
+  pas1_4:
+    [0, 1, b]: {L}
+    a: {R: pas1_1}
+  # pasul 2 (X <= Y)
+  # scriem 2-ul si 1-ul pentru scrierea in baza 1 la finalul benzii
+  # ne pozitionam pe primul 1 pe care vrem sa il copiem
+  pas2_1:
+    [b, 1]: R
+    B: {write: 2, R: pas2_2}
+  pas2_2:
+    B: {write: 1, L}
+    [1, 2]: L
+    b: {R: pas4_1}
+  # pas 3 (X > Y)
+  pas3_1:
+    # mai avem de scris 1-ul pentru baza 1
+    B: {write: 1, R: pas3_2}
+  pas3_2:
+  # si 1-ul pentru unitatea din X deja marcata
+    B: {write: 1, L}
+    # trecem peste tot pana ajungem la a-uri
+    [0, 1, 2, b]: L
+    # ma pozitionez pe primul 1 si ma duc la pas 4
+    a: {R: pas4_1}
+  # pas 4 (suntem pozitionati pe primul 1 pe care vrem sa il copiem)
+  # copiem toate 1-urile dupa 2
+  pas4_1:
+    1: {write: '-', R: pas4_2}
+    # daca am terminat de copiat 1-urile, sarim la pasul de cleanup
+    [0, 2]: {L: pas5_1}
+  pas4_2:
+    [0, 1, 2, b]: R
+    B: {write: 1, L: pas4_3}
+  pas4_3:
+    [0, 1, 2, b]: L
+    '-': {R: pas4_1}
+  # pas de cleanup (rescriem 1-uri peste a, b, 0 si -)
+  pas5_1:
+    # ne mutam pe 2
+    [a, b, 0, '-']: R
+    2: {L: pas5_2}
+  pas5_2:
+    # ne miscam catre stanga si punem 1 peste a, b si -, si 0 peste 0
+    0: L
+    [a, b, '-']: {write: 1, L}

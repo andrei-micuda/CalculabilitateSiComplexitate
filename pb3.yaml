@@ -1,0 +1,48 @@
+input: '111111111'
+blank: B
+start state: pas1_1
+table:
+  # pasul 1
+  pas1_1:
+    # marcam unitatea speciala pentru baza 1
+    1: {write: a, R: pas1_2}
+  pas1_2:
+    # daca X = 0, STOP stare nefinala
+    B: {L: nefin}
+    1: {L: pas2_1}
+    
+  # pasul 2
+  # impartim nr curfent de 1-uri de pe banda la 2,
+  # marcand primul 1 din fiecare pereche
+  pas2_1:
+    a: R
+    # primul 1 din pereche
+    1: {write: a, R: pas2_2}
+    # daca citim B, inseamna ca deimpartitul este par, sarim la pasul 3
+    B: {L: pas3_1}
+  pas2_2:
+    a: R
+    # al doilea 1 din pereche, continuam sa scadem 2 unitati din nr curent
+    1: {R: pas2_1}
+    # daca citim B, inseamna ca deimpartitul este impar, sarim la pasul 4
+    B: {L: pas4_1}
+    
+  #  pasul 3 - deimpartitul este par
+  # ne mutam la stanga la inceputul benzii pentru a mai face o impartire la 2
+  pas3_1:
+    [a, 1]: L
+    B: {R: pas2_1}
+  
+  # pasul 4 - deimpartitul este impar
+  # daca deimpartitul a fost 1 (i.e. pe banda avem doar a-uri) acceptam
+  # altfel, respingem
+  pas4_1:
+    a: L
+    # daca citim 1, deimpartitul a fost diferit de 1, respingem
+    1: {L: nefin}
+    B: {R: fin}
+    
+  # stare finala
+  fin:
+  # stare nefinala
+  nefin:
