@@ -1,0 +1,65 @@
+input: 'ababbbbabaababb'
+blank: B
+start state: pas1_1
+table:
+  pas1_1:
+    a: {write: 1, R: pas1_2}
+    b: {write: 2, R: pas1_2}
+    # am terminat de marcat si lungimea e divizibila cu 3
+    [3, 4]: {L: pas2}
+  pas1_2:
+    [a, b]: R
+    [B, 3, 4]: {L: pas1_3}
+  pas1_3:
+    a: {write: 3, L: pas1_4}
+    b: {write: 4, L: pas1_4}
+    # rest = 1
+    [1, 2]: {L: reject}
+  pas1_4:
+    a: {write: 3, L: pas1_5}
+    b: {write: 4, L: pas1_5}
+    # rest = 2
+    [1, 2]: {L: reject}
+  pas1_5:
+    [a, b]: L
+    [1, 2]: {R: pas1_1}
+  
+  # verificam simbolurile din cele 3 treimi
+  # la inceputul pasului 2 ne aflam pe cel mai din dreapta simbol nemarcat din prima treime
+  # vom retine simbolul citit in stare pentru a compara ulterior simbolurile din celelalte 2 treimi
+  pas2:
+    [x, y, 3, 4]: L
+    1: {write: x, R: pasa_1}
+    2: {write: y, R: pasb_1}
+    B: {R: acc}
+  
+  # am citit un a in prima treime
+  # incercam sa il matchuim in celelalte 2
+  pasa_1:
+    [x, y]: R
+    # daca am gasit b, stop
+    4: {L: reject}
+    3: {write: x, R: pasa_2}
+  pasa_2:
+    [3, 4]: R
+    [x, y, B]: {L: pasa_3}
+  pasa_3:
+    4: {L: reject}
+    3: {write: x, L: pas2}
+    
+  # am citit un b in prima treime
+  # incercam sa il matchuim in celelalte 2
+  pasb_1:
+    [x, y]: R
+    # daca am gasit a, stop
+    3: {L: reject}
+    4: {write: y, R: pasb_2}
+  pasb_2:
+    [3, 4]: R
+    [x, y, B]: {L: pasb_3}
+  pasb_3:
+    3: {L: reject}
+    4: {write: y, L: pas2}
+  
+  reject:
+  acc:
