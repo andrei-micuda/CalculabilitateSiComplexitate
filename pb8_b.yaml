@@ -1,0 +1,30 @@
+# avem pe banda un nr. X scris in baza 1, delimitat de 0 la final
+# calculam in dreapta lui 0 X/3
+
+input: '1111111110'
+blank: B
+start state: pas1
+table:
+  # marcam unitatea speciala
+  pas1:
+    1: {write: x, R: pas2_1}
+  
+  # pentru fiecare 3 unitati marcate in X
+  # scriem o unitate la rezultat
+  
+  # marcam 3 unitati in X
+  # daca la orice pas nu mai gasim 1-uri in X, stop
+  pas2_1:
+    1: {write: x, R: pas2_2}
+  pas2_2:
+    1: {write: x, R: pas2_3}
+  pas2_3:
+    1: {write: x, R: pas2_4}
+  # adaugam o unitate la rezultat
+  pas2_4:
+    [0, 1]: R
+    B: {write: 1, L: pas2_5}
+  # ne repozitionam pe portiunea nemarcata din X
+  pas2_5:
+    [0, 1]: L
+    x: {R: pas2_1}

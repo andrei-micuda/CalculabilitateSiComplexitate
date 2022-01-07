@@ -1,0 +1,36 @@
+# avem pe banda un nr. X scris in baza 1, delimitat de 0 la final
+# calculam in dreapta lui 0 3X
+
+input: '111110'
+blank: B
+start state: pas1
+table:
+  # ne mutam la capatul drept al benzii
+  pas1:
+    1: R
+    0: {L: pas2}
+    
+  # copiem unitatea speciala
+  pas2:
+    1: {write: x, R}
+    0: R
+    B: {write: 1, L: pas3_1}
+  
+  # marcam o unitate din x
+  pas3_1:
+    [x, 0]: L
+    1: {write: x, R: pas3_2}
+  
+  # scriem 3 unitati pentru unitatea marcata
+  pas3_2:
+    [x, 0, 1]: R
+    B: {write: 1, R: pas3_3}
+  pas3_3:
+    B: {write: 1, R: pas3_4}
+  pas3_4:
+    B: {write: 1, L: pas3_5}
+    
+  # neintoarcem la x ca sa mai marcam o unitate  
+  pas3_5:
+    1: L
+    0: {L: pas3_1}
